@@ -5,9 +5,18 @@ defmodule AnydropWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate">
-      <.input type="textarea" field={@form[:body]} label="Drop Anything" required />
-      <button disable-with="Dropping..."> Drop </button>
+    <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate" class="bg-transparent">
+      <div class="text-center mx-16">
+        <p class="text-3xl font-bold text-emerald-700">Drop a Message!</p>
+      </div>
+      <.input type="textarea" field={@form[:body]}  class="h-64 !text-xl bg-[#E6E6E6] font-semibold" required  />
+      <div class="flex justify-end">
+        <button disable-with="Dropping..."
+          class="bg-emerald-600 text-white text-xl font-bold rounded p-2 hover:bg-emerald-500 active:bg-emerald-700"
+        >
+          Drop
+        </button>
+      </div>
     </.simple_form>
     """
   end
@@ -30,8 +39,13 @@ defmodule AnydropWeb.HomeLive do
           |> put_flash(:info, "Dropped!")
           |> assign(:form, DropContext.change_drop(%Drop{}) |> to_form)
         }
-      {:error, changeset} ->
-        {:noreply, assign(socket, :form, to_form(changeset))}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        changeset =
+          changeset
+          |> Map.put(:action, :insert)
+          |> to_form()
+        {:noreply, assign(socket, :form, changeset)}
     end
   end
 end
