@@ -7,7 +7,7 @@ defmodule AnydropWeb.HomeLive do
     ~H"""
     <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate" class="!bg-transparent">
       <div class="text-center mx-16">
-        <p class="text-3xl font-bold text-emerald-700">Drop a Message!</p>
+        <p class="text-4xl font-bold text-emerald-700">Drop a Message!</p>
       </div>
       <.input type="textarea" field={@form[:body]}  class="h-64 !text-xl bg-[#E6E6E6] font-semibold" required  />
       <div class="flex justify-end">
