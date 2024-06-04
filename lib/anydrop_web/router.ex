@@ -18,6 +18,7 @@ defmodule AnydropWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/9a2ba138ad23cf439dc6b82696ab5a645cdbec18", AdminLive
   end
 
   # Other scopes may use custom stacks.
