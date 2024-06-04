@@ -5,7 +5,7 @@ defmodule AnydropWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate" class="bg-transparent">
+    <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate" class="!bg-transparent">
       <div class="text-center mx-16">
         <p class="text-3xl font-bold text-emerald-700">Drop a Message!</p>
       </div>
