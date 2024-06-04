@@ -13,7 +13,8 @@ config :anydrop,
 
 # Configures the endpoint
 config :anydrop, AnydropWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "127.0.0.1"],
+  check_origin: ["https://anydrop.audacioustux.com/", "//anydrop.fly.dev/"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: AnydropWeb.ErrorHTML, json: AnydropWeb.ErrorJSON],
