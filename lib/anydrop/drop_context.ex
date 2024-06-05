@@ -53,7 +53,18 @@ defmodule Anydrop.DropContext do
     %Drop{}
     |> Drop.changeset(attrs)
     |> Repo.insert()
+    |> broadcast()
   end
+
+  def broadcast({:ok, drop}) do
+    message = {:message_dropped, drop}
+
+    Phoenix.PubSub.broadcast(Anydrop.PubSub, "drop_topic", message)
+
+    {:ok, drop}
+  end
+
+  def broadcast({:error, changeset}), do: {:error, changeset}
 
   @doc """
   Updates a drop.
@@ -100,5 +111,9 @@ defmodule Anydrop.DropContext do
   """
   def change_drop(%Drop{} = drop, attrs \\ %{}) do
     Drop.changeset(drop, attrs)
+  end
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(Anydrop.PubSub, "drop_topic")
   end
 end
