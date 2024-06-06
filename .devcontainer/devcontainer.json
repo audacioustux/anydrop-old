@@ -1,0 +1,58 @@
+{
+	"name": "AnyDrop",
+	"dockerComposeFile": "compose.yml",
+	"service": "anydrop",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mutantdino.resourcemonitor",
+				"Gruntfuggly.todo-tree",
+				"esbenp.prettier-vscode",
+				"dbaeumer.vscode-eslint"
+			],
+			"settings": {
+				"git.autofetch": true,
+				"files.autoSave": "onFocusChange",
+				"editor.formatOnSave": true,
+				"editor.formatOnPaste": true,
+				"resmon.show.cpufreq": false,
+				"[typescript]": {
+					"editor.defaultFormatter": "esbenp.prettier-vscode"
+				}
+			}
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"configureZshAsDefaultShell": true,
+			"username": "devcontainer"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"installDockerBuildx": true,
+			"installDockerComposeSwitch": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/rust:1": {
+			"version": "latest",
+			"profile": "default"
+		},
+		"ghcr.io/devcontainers-contrib/features/elixir-asdf:2": {
+			"elixirVersion": "latest",
+			"erlangVersion": "latest"
+		},
+		"ghcr.io/audacioustux/devcontainers/common-utils-extras:1": {},
+		"ghcr.io/audacioustux/devcontainers/taskfile:1": {}
+	},
+	"updateContentCommand": "git clean -Xdf --exclude='!**/*.env'"
+}
