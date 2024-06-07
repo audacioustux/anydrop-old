@@ -6,26 +6,27 @@ defmodule AnydropWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <.simple_form for={@form} id="drop_form" phx-submit="save" phx-change="validate">
-      <div class="text-center mx-16">
-        <p class="text-4xl font-bold text-emerald-700">Drop a Message!</p>
-      </div>
       <.input
         type="textarea"
         field={@form[:body]}
-        class="h-64 bg-emerald-50 font-semibold shadow-md p-4"
+        label="Short Message (max 500 chars)"
+        class="h-64 p-6 border-0 resize-none leading-relaxed font-medium text-slate-800 text-lg scrollbar-none hover:ring-1 hover:ring-slate-700 focus:ring-slate-800 shadow-md hover:shadow-lg focus:shadow-none bg-white transition-shadow duration-500"
+        placeholder="Drop your message here..."
+        maxlength="500"
+        phx-mounted={JS.focus()}
+        phx-debounce="1000"
         required
       />
       <div class="flex justify-end">
         <button
           disable-with="Dropping..."
           class="bg-white inline-flex items-center justify-center whitespace-nowrap rounded-md
-                        text-sm font-medium ring-offset-background transition-colors
-                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring
-                        focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50
+                        text-sm font-medium ring-offset-background transition-colors transition-shadow duration-500
                         h-10 px-8 py-4
-                        text-slate-700 hover:text-slate-800 active:fill-text-900
-                        fill-slate-700 hover:fill-slate-800 active:fill-slate-900
-                        shadow-md bg-white hover:bg-slate-50 active:bg-slate-100
+                        text-slate-700 hover:text-slate-800
+                        fill-slate-700 hover:fill-slate-800
+                        shadow-md hover:shadow-lg focus:shadow-none bg-white
+                        focus:ring-1 focus:ring-slate-800 hover:ring-slate-700 hover:ring-1
                       "
         >
           <svg

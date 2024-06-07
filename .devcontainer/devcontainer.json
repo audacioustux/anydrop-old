@@ -9,17 +9,15 @@
 				"mutantdino.resourcemonitor",
 				"Gruntfuggly.todo-tree",
 				"esbenp.prettier-vscode",
-				"dbaeumer.vscode-eslint"
+				"dbaeumer.vscode-eslint",
+				"JakeBecker.elixir-ls"
 			],
 			"settings": {
 				"git.autofetch": true,
 				"files.autoSave": "onFocusChange",
 				"editor.formatOnSave": true,
 				"editor.formatOnPaste": true,
-				"resmon.show.cpufreq": false,
-				"[typescript]": {
-					"editor.defaultFormatter": "esbenp.prettier-vscode"
-				}
+				"resmon.show.cpufreq": false
 			}
 		}
 	},
@@ -47,10 +45,7 @@
 			"version": "latest",
 			"profile": "default"
 		},
-		"ghcr.io/devcontainers-contrib/features/elixir-asdf:2": {
-			"elixirVersion": "latest",
-			"erlangVersion": "latest"
-		},
+		"ghcr.io/devcontainers-contrib/features/elixir-asdf:2": {},
 		"ghcr.io/audacioustux/devcontainers/common-utils-extras:1": {},
 		"ghcr.io/audacioustux/devcontainers/taskfile:1": {}
 	},

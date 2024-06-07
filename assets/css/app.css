@@ -3,3 +3,18 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+@layer utilities {
+    .scrollbar-none {
+        scrollbar-width: none;
+    }
+
+    .scrollbar-stable {
+        overflow: scroll;
+
+        @supports (scrollbar-gutter: stable) {
+            overflow: auto;
+            scrollbar-gutter: stable;
+        }
+    }
+}
