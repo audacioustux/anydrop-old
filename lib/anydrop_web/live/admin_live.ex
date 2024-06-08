@@ -16,6 +16,7 @@ defmodule AnydropWeb.AdminLive do
                 <%= drop.body
                     |> html_escape()
                     |> safe_to_string()
+                    |> String.trim_trailing()
                     |> String.replace("\n", "<br>")
                     |> raw()
                 %>
