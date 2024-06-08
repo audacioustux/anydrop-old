@@ -3,6 +3,8 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+@layer base {
+}
 
 @layer utilities {
     .scrollbar-none {

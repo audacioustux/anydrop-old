@@ -13,5 +13,6 @@ defmodule Anydrop.DropContext.Drop do
     drop
     |> cast(attrs, [:body])
     |> validate_required([:body])
+    |> validate_length(:body, max: 500, min: 1)
   end
 end
