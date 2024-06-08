@@ -359,11 +359,11 @@ defmodule AnydropWeb.CoreComponents do
         class={
           [
             # "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 text-lg sm:text-sm sm:leading-6",
-            "mt-2 block w-full rounded-lg text-zinc-900",
+            "mt-2 block w-full rounded-lg",
             # "min-h-[6rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-            @class,
-            @errors == [] && "border-zinc-300 focus:border-zinc-400",
-            @errors != [] && "border-rose-400 focus:border-rose-400"
+            @class
+            # @errors == [] && "border-zinc-300 focus:border-zinc-400",
+            # @errors != [] && "border-rose-400 focus:border-rose-400"
           ]
         }
         {@rest}
@@ -404,7 +404,7 @@ defmodule AnydropWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-700">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -437,7 +437,7 @@ defmodule AnydropWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+        <h1 class="text-lg font-semibold leading-8 text-zinc-700">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">

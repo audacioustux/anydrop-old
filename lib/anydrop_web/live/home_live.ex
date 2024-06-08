@@ -11,7 +11,7 @@ defmodule AnydropWeb.HomeLive do
         style="background-image: url(/images/bg/doodles.png)"
       />
       <div class="container max-w-2xl px-4 justify-self-center row-start-1 col-start-1">
-        <div class="flex rounded-full h-16 w-16 bg-white shadow-2xl justify-center items-center mx-auto mt-16 p-3 ring-1 hover:ring-2 ring-zinc-700 transition-shadow duration-500 hover:shadow-sm cursor-pointer mb-32 hover:shadow-zinc-50 overflow-hidden">
+        <div class="flex rounded-full h-16 w-16 bg-white shadow-2xl justify-center items-center mx-auto mt-16 p-3 transition-all duration-500 ring-1 ring-zinc-700 hover:ring-2 shadow-lg hover:shadow-md mb-32 overflow-hidden">
           <svg
             width="256"
             height="256"
@@ -49,8 +49,8 @@ defmodule AnydropWeb.HomeLive do
             type="textarea"
             field={@form[:body]}
             label="Short Message (max 500 chars)"
-            class="h-36 py-6 px-7 scroll-p-6 border-0 resize-none leading-6 font-medium text-lg ring-1 ring-zinc-700 hover:ring-2 focus:ring-2 focus:ring-offset-4 focus:ring-offset-zinc-200 focus:ring-zinc-700 shadow-lg hover:shadow-md focus:shadow-none bg-white transition-shadow duration-500"
-            placeholder="Drop your message here..."
+            class="h-36 py-6 px-7 scroll-p-6 border-0 resize-none leading-6 text-zinc-700 focus:text-zinc-900 hover:text-zinc-900 font-medium text-lg ring-1 ring-zinc-700 hover:ring-2 focus:ring-2 focus:ring-offset-4 focus:ring-offset-zinc-200 focus:ring-zinc-700 shadow-lg hover:shadow-md focus:shadow-none bg-white transition-all duration-500 placeholder-zinc-500"
+            placeholder="Write your message here..."
             maxlength="500"
             phx-mounted={JS.focus()}
             phx-debounce="1000"
@@ -60,12 +60,12 @@ defmodule AnydropWeb.HomeLive do
             <button
               disable-with="Dropping..."
               class="bg-white inline-flex items-center justify-center whitespace-nowrap rounded-md
-                        text-sm font-medium ring-offset-background transition-colors transition-shadow duration-500
+                        text-sm font-medium ring-offset-background transition-all duration-500
                         h-10 px-8 py-4
-                        text-zinc-700 hover:text-zinc-800
-                        fill-zinc-700 hover:fill-zinc-800
+                        text-zinc-700 hover:text-zinc-900
+                        fill-zinc-700 hover:fill-zinc-900
                         shadow-lg hover:shadow-md focus:shadow-none bg-white
-                        ring-1 ring-zinc-700 hover:ring-2 focus:ring-offset-4 focus:ring-offset-zinc-200
+                        ring-1 ring-zinc-700 hover:ring-zinc-900 focus:ring-zinc-900 hover:ring-2 focus:ring-offset-4 focus:ring-offset-zinc-200
                         select-none
                       "
             >
