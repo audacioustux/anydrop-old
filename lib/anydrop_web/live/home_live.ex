@@ -88,7 +88,7 @@ defmodule AnydropWeb.HomeLive do
   end
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, :page_title, "AnyDrop - Drop anonymous messages!")
+    socket = assign(socket, :page_title, "AnyDrop - Drop anything anonymously!")
     changeset = DropContext.change_drop(%Drop{})
     {:ok, socket |> assign(form: to_form(changeset))}
   end
