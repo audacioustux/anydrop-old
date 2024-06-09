@@ -21,6 +21,14 @@ defmodule Anydrop.DropContext do
     Repo.all(Drop)
   end
 
+  def list_drops([offset: offset, limit: limit]) do
+    Drop
+    |> order_by(desc: :inserted_at)
+    |> limit(^limit)
+    |> offset(^offset)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single drop.
 

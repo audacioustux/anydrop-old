@@ -4,10 +4,11 @@ defmodule AnydropWeb.DropComponents do
 
   attr :body, :string, required: true
   attr :created, :any, required: true
+  attr :id, :string, required: true
 
   def drop_card(assigns) do
     ~H"""
-      <div class="flex flex-col
+      <div id={@id} class="flex flex-col
                       rounded-lg shadow-lg bg-white
                       border-0
                       w-full
