@@ -26,13 +26,9 @@ let Hooks = {};
 
 Hooks.ScrollToBottom = {
   mounted() {
-    this.handleEvent("play-sound", () => {
-      let audio = new Audio("/sounds/new_drop.mp3");
-      audio.play().catch(e => console.log("Error playing sound:", e));
-    });
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     this.handleEvent("scroll-to-bottom", () => {
-      let container = document.getElementById("messages-container");
-      container.scrollTop = container.scrollHeight;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
   }
 };
@@ -41,7 +37,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: Hooks
+  hooks: Hooks,
 })
 
 // Show progress bar on live navigation and form submits
