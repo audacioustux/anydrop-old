@@ -6,15 +6,15 @@ defmodule AnydropWeb.AdminLive do
 
   def render(assigns) do
     ~H"""
-      <div id="id" phx-hook="ScrollToBottom">
+      <div id="scroll-wrapper-id" phx-hook="ScrollToBottom">
         <main id="drops-container"
           phx-update="stream"
           phx-viewport-top={!@end_of_stream? && "prev-page"}
           phx-viewport-bottom={@page > 1 && "next-page"}
           phx-loading-page
           class={["container flex flex-col items-start gap-12 max-w-2xl py-16 mx-auto px-4",
-                  if(@end_of_stream?, do: "", else: "pt-[calc(100vh)]"),
-                  if(@page == 1, do: "", else: "pb-[calc(100vh)]")
+                  if(@end_of_stream?, do: "", else: "pt-[calc(200vh)]"),
+                  if(@page == 1, do: "", else: "pb-[calc(200vh)]")
           ]}
         >
           <%= for {id, drop} <- @streams.drops do%>
