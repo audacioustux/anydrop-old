@@ -4,6 +4,7 @@ defmodule Anydrop.DropContext.Drop do
 
   schema "drops" do
     field :body, :string
+    field :is_deleted, :boolean, default: false
 
     timestamps(type: :utc_datetime)
   end
@@ -14,5 +15,10 @@ defmodule Anydrop.DropContext.Drop do
     |> cast(attrs, [:body])
     |> validate_required([:body])
     |> validate_length(:body, max: 500, min: 1)
+  end
+
+  def delete_changeset(drop, attrs) do
+    drop
+    |> cast(attrs, [:is_deleted])
   end
 end

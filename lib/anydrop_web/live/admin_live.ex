@@ -19,9 +19,8 @@ defmodule AnydropWeb.AdminLive do
         >
           <%= for {id, drop} <- @streams.drops do%>
             <.drop_card
-              id={id}
-              body={drop.body}
-              created={drop.inserted_at}
+              drop={drop}
+              dom_id={id}
             />
           <% end %>
         </main>
@@ -98,6 +97,13 @@ defmodule AnydropWeb.AdminLive do
       |> push_event("scroll-to-bottom", %{})
       |> assign(:new_drop?, false)
     }
+  end
+
+  def handle_event("delete_drop", %{"dom_id" => dom_id, "drop_id" => drop_id}, socket) do
+    drop = DropContext.get_drop!(drop_id)
+    DropContext.update_is_deleted_drop(drop)
+    socket = stream_delete_by_dom_id(socket, :drops, dom_id)
+    {:noreply, socket}
   end
 
   def handle_info({:message_dropped, _drop}, socket) do

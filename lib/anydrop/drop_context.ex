@@ -23,6 +23,7 @@ defmodule Anydrop.DropContext do
 
   def list_drops([offset: offset, limit: limit]) do
     Drop
+    |> where([d], d.is_deleted == false)
     |> order_by(desc: :inserted_at)
     |> limit(^limit)
     |> offset(^offset)
@@ -64,16 +65,6 @@ defmodule Anydrop.DropContext do
     |> broadcast()
   end
 
-  def broadcast({:ok, drop}) do
-    message = {:message_dropped, drop}
-
-    Phoenix.PubSub.broadcast(Anydrop.PubSub, "drop_topic", message)
-
-    {:ok, drop}
-  end
-
-  def broadcast({:error, changeset}), do: {:error, changeset}
-
   @doc """
   Updates a drop.
 
@@ -89,6 +80,12 @@ defmodule Anydrop.DropContext do
   def update_drop(%Drop{} = drop, attrs) do
     drop
     |> Drop.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_is_deleted_drop(%Drop{} = drop, attrs \\ %{is_deleted: true}) do
+    drop
+    |> Drop.delete_changeset(attrs)
     |> Repo.update()
   end
 
@@ -120,6 +117,17 @@ defmodule Anydrop.DropContext do
   def change_drop(%Drop{} = drop, attrs \\ %{}) do
     Drop.changeset(drop, attrs)
   end
+
+
+  def broadcast({:ok, drop}) do
+    message = {:message_dropped, drop}
+
+    Phoenix.PubSub.broadcast(Anydrop.PubSub, "drop_topic", message)
+
+    {:ok, drop}
+  end
+
+  def broadcast({:error, changeset}), do: {:error, changeset}
 
   def subscribe do
     Phoenix.PubSub.subscribe(Anydrop.PubSub, "drop_topic")
