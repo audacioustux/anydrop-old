@@ -6,12 +6,11 @@ defmodule AnydropWeb.UserAuth do
 
   alias Anydrop.Accounts
 
-  # Make the remember me cookie valid for 60 days.
   # If you want bump or reduce this value, also change
   # the token expiry itself in UserToken.
-  @max_age 60 * 60 * 24 * 60
-  @remember_me_cookie "_anydrop_web_user_remember_me"
-  @remember_me_options [sign: true, max_age: @max_age, same_site: "Lax"]
+  @max_age 60 * 60
+  @remember_me_cookie "_anydrop_web_remember_me"
+  @remember_me_options [sign: true, http_only: true, secure: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
   Logs the user in.
@@ -25,24 +24,29 @@ defmodule AnydropWeb.UserAuth do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
-  def log_in_user(conn, user, params \\ %{}) do
-    token = Accounts.generate_user_session_token(user)
+  def log_in_user(conn, user) do
+    token = Accounts.create_user_token(user)
     user_return_to = get_session(conn, :user_return_to)
 
     conn
-    |> renew_session()
-    |> put_token_in_session(token)
-    |> maybe_write_remember_me_cookie(token, params)
+    |> put_token_in_cookie(token)
+    |> put_session(:user_token, token)
+    |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
     |> redirect(to: user_return_to || signed_in_path(conn))
   end
 
-  defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
-    put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
+  defp put_token_in_cookie(conn, token) do
+    conn
+      |> put_resp_cookie(@remember_me_cookie, token, @remember_me_options)
   end
 
-  defp maybe_write_remember_me_cookie(conn, _token, _params) do
-    conn
-  end
+  # defp maybe_write_remember_me_cookie(conn, token, %{"remember_me" => "true"}) do
+  #   put_resp_cookie(conn, @remember_me_cookie, token, @remember_me_options)
+  # end
+
+  # defp maybe_write_remember_me_cookie(conn, _token, _params) do
+  #   conn
+  # end
 
   # This function renews the session ID and erases the whole
   # session to avoid fixation attacks. If there is any data
@@ -73,8 +77,9 @@ defmodule AnydropWeb.UserAuth do
   It clears all session data for safety. See renew_session.
   """
   def log_out_user(conn) do
-    user_token = get_session(conn, :user_token)
-    user_token && Accounts.delete_user_session_token(user_token)
+    conn = fetch_cookies(conn, signed: @remember_me_cookie)
+    # user_token = get_session(conn, :user_token)
+    # user_token && Accounts.delete_user_session_token(user_token)
 
     if live_socket_id = get_session(conn, :live_socket_id) do
       AnydropWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
@@ -82,7 +87,7 @@ defmodule AnydropWeb.UserAuth do
 
     conn
     |> renew_session()
-    |> delete_resp_cookie(@remember_me_cookie)
+    |> delete_resp_cookie(@remember_me_cookie, @remember_me_options)
     |> redirect(to: ~p"/")
   end
 
@@ -92,7 +97,7 @@ defmodule AnydropWeb.UserAuth do
   """
   def fetch_current_user(conn, _opts) do
     {user_token, conn} = ensure_user_token(conn)
-    user = user_token && Accounts.get_user_by_session_token(user_token)
+    user = user_token && Accounts.get_user_by_user_token(user_token)
     assign(conn, :current_user, user)
   end
 
@@ -103,7 +108,7 @@ defmodule AnydropWeb.UserAuth do
       conn = fetch_cookies(conn, signed: [@remember_me_cookie])
 
       if token = conn.cookies[@remember_me_cookie] do
-        {token, put_token_in_session(conn, token)}
+        {token, put_session(conn, :user_token, token)}
       else
         {nil, conn}
       end
@@ -177,7 +182,7 @@ defmodule AnydropWeb.UserAuth do
   defp mount_current_user(socket, session) do
     Phoenix.Component.assign_new(socket, :current_user, fn ->
       if user_token = session["user_token"] do
-        Accounts.get_user_by_session_token(user_token)
+        Accounts.get_user_by_user_token(user_token)
       end
     end)
   end
@@ -213,11 +218,11 @@ defmodule AnydropWeb.UserAuth do
     end
   end
 
-  defp put_token_in_session(conn, token) do
-    conn
-    |> put_session(:user_token, token)
-    |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
-  end
+  # defp put_token_in_session(conn, token) do
+  #   conn
+  #   |> put_session(:user_token, token)
+  #   |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
+  # end
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do
     put_session(conn, :user_return_to, current_path(conn))

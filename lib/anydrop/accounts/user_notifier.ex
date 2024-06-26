@@ -17,61 +17,27 @@ defmodule Anydrop.Accounts.UserNotifier do
     end
   end
 
-  @doc """
-  Deliver instructions to confirm account.
-  """
-  def deliver_confirmation_instructions(user, url) do
-    deliver(user.email, "Confirmation instructions", """
+  def deliver_login_instructions(email, url, otp) do
+    deliver(email, "Login instructions", """
 
     ==============================
 
-    Hi #{user.email},
+    Hi,
 
     You can confirm your account by visiting the URL below:
+
+    <div style="text-align: center;">
+      <a href="#{url}" style="font-size: 32px; margin: auto; text-decoration: underline;">Confirm Login</a>
+    </div>
+    or, copy and paste the OTP:
+    <div style="border: 2px solid #000; padding: 10px; text-align: center; max-width: 200px; margin: auto;">
+      <p style="font-weight: bold; font-size: 24px;">#{otp}</p>
+    </div>
+    or, copy and paste the link in your browser:
 
     #{url}
 
     If you didn't create an account with us, please ignore this.
-
-    ==============================
-    """)
-  end
-
-  @doc """
-  Deliver instructions to reset a user password.
-  """
-  def deliver_reset_password_instructions(user, url) do
-    deliver(user.email, "Reset password instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can reset your password by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
-  end
-
-  @doc """
-  Deliver instructions to update a user email.
-  """
-  def deliver_update_email_instructions(user, url) do
-    deliver(user.email, "Update email instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can change your email by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
 
     ==============================
     """)

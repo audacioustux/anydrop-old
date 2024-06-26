@@ -1,4 +1,25 @@
 <main class="w-screen h-screen">
   <.flash_group flash={@flash} />
+  <div class="flex justify-around">
+    <%= if @current_user do %>
+      <div><%= @current_user.username %></div> 
+      <div><%= @current_user.display_name %></div> 
+      <.link
+        href={~p"/users/log_out"}
+        method="delete"
+        class=" leading-6 text-brand_text font-semibold hover:text-brand_text_hover"
+      >
+        Log out
+      </.link>
+    <% else %>
+      <.link
+        href={~p"/users/log_in"}
+        class=" leading-6 text-brand_text font-semibold hover:text-brand_text_hover"
+      >
+        Get Started
+      </.link>
+    <% end %>
+      
+  </div>
   <%= @inner_content %>
 </main>
