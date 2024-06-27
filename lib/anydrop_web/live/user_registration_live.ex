@@ -21,7 +21,7 @@ defmodule AnydropWeb.UserRegistrationLive do
           Oops, something went wrong! Please check the errors below.
         </.error>
 
-        <.input field={@form[:email]} type="email" label="Email" required />
+        <.input field={@form[:email]} type="email" label="Email" required readonly/>
         <.input field={@form[:username]} type="text" label="Username" required />
         <.input field={@form[:display_name]} type="text" label="Display Name" required />
 
