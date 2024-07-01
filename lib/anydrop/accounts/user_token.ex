@@ -66,12 +66,7 @@ defmodule Anydrop.Accounts.UserToken do
   end
 
   defp get_secret_key do
-    case Mix.env() do
-      :prod ->
-        System.get_env("SECRET_KEY_BASE")
-      _dev_or_test ->
-        Application.get_env(:anydrop, AnydropWeb.Endpoint)[:secret_key_base]
-    end
+    Application.get_env(:anydrop, AnydropWeb.Endpoint)[:secret_key_base]
   end
 
   defp create_otp("login") do
