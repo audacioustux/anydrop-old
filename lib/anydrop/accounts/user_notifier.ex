@@ -8,9 +8,9 @@ defmodule Anydrop.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Anydrop", "contact@example.com"})
+      |> from({"Anydrop", "no-reply@audacioustux.com"})
       |> subject(subject)
-      |> text_body(body)
+      |> html_body(body)
 
     with {:ok, _metadata} <- Mailer.deliver(email) do
       {:ok, email}
@@ -19,8 +19,6 @@ defmodule Anydrop.Accounts.UserNotifier do
 
   def deliver_login_instructions(email, url, otp) do
     deliver(email, "Login instructions", """
-
-    ==============================
 
     Hi,
 
@@ -35,11 +33,9 @@ defmodule Anydrop.Accounts.UserNotifier do
     </div>
     or, copy and paste the link in your browser:
 
-    #{url}
+    <p style="width: 50%; text-decoration: none;">#{url}</p>
 
     If you didn't create an account with us, please ignore this.
-
-    ==============================
     """)
   end
 end

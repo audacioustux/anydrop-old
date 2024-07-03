@@ -16,9 +16,31 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+
 if System.get_env("PHX_SERVER") do
   config :anydrop, AnydropWeb.Endpoint, server: true
 end
+
+# configuring the mailer
+smtp_relay = System.get_env("SMTP_ENDPOINT") |> to_charlist()
+tls_options = [versions: [:"tlsv1.2"],
+              server_name_indication: smtp_relay,
+              depth: 99,
+              cacerts: :public_key.cacerts_get()
+            ]
+
+config :anydrop, Anydrop.Mailer,
+    adapter: Swoosh.Adapters.SMTP,
+    relay: System.get_env("SMTP_ENDPOINT"),
+    username: System.get_env("SMTP_USERNAME"),
+    password: System.get_env("SMTP_PASSWORD"),
+    ssl: false,
+    tls: :always,
+    auth: :always,
+    port: 587,
+    no_mx_lookups: false,
+    tls_options: tls_options,
+    retries: 1
 
 if config_env() == :prod do
   database_url =
