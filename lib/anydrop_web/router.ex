@@ -1,7 +1,7 @@
 defmodule AnydropWeb.Router do
   use AnydropWeb, :router
 
-  import AnydropWeb.UserAuth
+  import AnydropWeb.ProfileAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -10,7 +10,7 @@ defmodule AnydropWeb.Router do
     plug :put_root_layout, html: {AnydropWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :fetch_current_user
+    plug :fetch_current_profile
   end
 
   pipeline :api do
@@ -20,11 +20,10 @@ defmodule AnydropWeb.Router do
   scope "/", AnydropWeb do
     pipe_through :browser
 
-    live_session :mount_user,
-        on_mount: [{AnydropWeb.UserAuth, :mount_current_user}] do
+    live_session :mount_profile,
+        on_mount: [{AnydropWeb.ProfileAuth, :mount_current_profile}] do
           live "/", HomeLive
-          live "/9a2ba138ad23cf439dc6b82696ab5a645cdbec18", AdminLive
-          # live "/drops", AdminLive
+          live "/drop/:send_to", SendLive
       end
   end
 
@@ -53,33 +52,33 @@ defmodule AnydropWeb.Router do
   ## Authentication routes
 
   scope "/", AnydropWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+    pipe_through [:browser, :redirect_if_profile_is_authenticated]
 
-    live_session :redirect_if_user_is_authenticated,
-      on_mount: [{AnydropWeb.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/users/register/:token", UserRegistrationLive, :new
-      live "/users/log_in", UserLoginLive, :new
+    live_session :redirect_if_profile_is_authenticated,
+      on_mount: [{AnydropWeb.ProfileAuth, :redirect_if_profile_is_authenticated}] do
+      live "/users/register/:token", ProfileRegistrationLive, :new
+      live "/users/log_in", ProfileLoginLive, :new
     end
 
-    post "/users/log_in", UserSessionController, :create
+    post "/users/log_in", ProfileSessionController, :create
   end
 
-  # scope "/", AnydropWeb do
-  #   pipe_through [:browser, :require_authenticated_user]
+  scope "/", AnydropWeb do
+    pipe_through [:browser, :require_authenticated_profile]
 
-  #   live_session :require_authenticated_user,
-  #     on_mount: [{AnydropWeb.UserAuth, :ensure_authenticated}] do
-
-  #   end
-  # end
+    live_session :require_authenticated_profile,
+      on_mount: [{AnydropWeb.ProfileAuth, :ensure_authenticated}] do
+      live "/drops", AdminLive
+    end
+  end
 
   scope "/", AnydropWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
+    delete "/users/log_out", ProfileSessionController, :delete
 
-    # live_session :current_user,
-    #   on_mount: [{AnydropWeb.UserAuth, :mount_current_user}] do
+    # live_session :current_profile,
+    #   on_mount: [{AnydropWeb.ProfileAuth, :mount_current_profile}] do
 
     # end
   end

@@ -44,21 +44,21 @@ defmodule AnydropWeb.ConnCase do
   It stores an updated connection and a registered user in the
   test context.
   """
-  def register_and_log_in_user(%{conn: conn}) do
-    user = Anydrop.AccountsFixtures.user_fixture()
-    %{conn: log_in_user(conn, user), user: user}
+  def register_and_log_in_profile(%{conn: conn}) do
+    profile = Anydrop.AccountsFixtures.profile_fixture()
+    %{conn: log_in_profile(conn, profile), profile: profile}
   end
 
   @doc """
-  Logs the given `user` into the `conn`.
+  Logs the given `profile` into the `conn`.
 
   It returns an updated `conn`.
   """
-  def log_in_user(conn, user) do
-    token = Anydrop.Accounts.create_user_token(user)
+  def log_in_profile(conn, profile) do
+    token = Anydrop.Accounts.create_profile_token(profile)
 
     conn
     |> Phoenix.ConnTest.init_test_session(%{})
-    |> Plug.Conn.put_session(:user_token, token)
+    |> Plug.Conn.put_session(:profile_token, token)
   end
 end

@@ -6,7 +6,7 @@ defmodule Anydrop.Accounts do
   import Ecto.Query, warn: false
   alias Anydrop.Repo
 
-  alias Anydrop.Accounts.{User, UserToken, UserNotifier}
+  alias Anydrop.Accounts.{ProfileToken, ProfileNotifier, Profile, User}
 
   ## Database getters
 
@@ -22,8 +22,8 @@ defmodule Anydrop.Accounts do
       nil
 
   """
-  def get_user_by_email(email) when is_binary(email) do
-    Repo.get_by(User, email: email)
+  def get_profile_by_email(email) when is_binary(email) do
+    Repo.get_by(Profile, email: email)
   end
 
   @doc """
@@ -40,7 +40,11 @@ defmodule Anydrop.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_profile!(id), do: Repo.get!(Profile, id)
+
+  def get_profile_by_handle!(handle) do
+    Repo.get_by(Profile, handle: handle)
+  end
 
   ## User registration
 
@@ -56,9 +60,18 @@ defmodule Anydrop.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def register_user(attrs) do
+  def register_profile(attrs) do
+    {:ok, user} = create_user(%{})
+
+    user
+    |> Ecto.build_assoc(:profiles)
+    |> Profile.registration_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_user(attrs) do
     %User{}
-    |> User.registration_changeset(attrs)
+    |> User.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -71,8 +84,8 @@ defmodule Anydrop.Accounts do
       %Ecto.Changeset{data: %User{}}
 
   """
-  def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, validate_email: false)
+  def change_profile_registration(%Profile{} = profile, attrs \\ %{}) do
+    Profile.registration_changeset(profile, attrs, validate_email: false)
   end
 
   ## Settings
@@ -86,8 +99,8 @@ defmodule Anydrop.Accounts do
       %Ecto.Changeset{data: %User{}}
 
   """
-  def change_user_email(user, attrs \\ %{}) do
-    User.email_changeset(user, attrs, validate_email: false)
+  def change_profile_email(profile, attrs \\ %{}) do
+    Profile.email_changeset(profile, attrs, validate_email: false)
   end
 
   @doc """
@@ -103,69 +116,71 @@ defmodule Anydrop.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def apply_user_email(user, attrs) do
-    user
-    |> User.email_changeset(attrs)
+  def apply_profile_email(profile, attrs) do
+    profile
+    |> Profile.email_changeset(attrs)
     |> Ecto.Changeset.apply_action(:update)
   end
 
   @doc """
   Gets the user with the given signed token.
   """
-  def get_user_by_user_token(token) do
-    case verify_user_token(token) do
-      {:ok, %{"user_id" => user_id}} ->
-        get_user!(user_id)
+  def get_profile_by_profile_token(token) do
+    case verify_profile_token(token) do
+      {:ok, %{"profile_id" => profile_id}} ->
+        get_profile!(profile_id)
       {:error, _} -> nil
     end
   end
 
   def create_login_token_and_deliver_instruction(email) do
-    case UserToken.generate_signed_token(%{"email" => email}, "login") do
+    case ProfileToken.generate_signed_token(%{"email" => email}, "login") do
       {token, otp} ->
         url = create_login_link(token, otp)
-        UserNotifier.deliver_login_instructions(email, url, otp)
+        ProfileNotifier.deliver_login_instructions(email, url, otp)
         token
       :error -> :error
     end
   end
 
   def verify_login_token(token, otp) do
-    UserToken.verify_signed_token(token, "login", otp)
+    ProfileToken.verify_signed_token(token, "login", otp)
   end
 
   defp create_login_link(token, otp) do
     url(~p"/users/log_in?token=#{token}&otp=#{otp}")
   end
 
-  def create_user_token(user) do
-    claim = %{"user_id" => user.id}
-    case UserToken.generate_signed_token(claim, "user") do
+  def create_profile_token(profile) do
+    claim = %{"profile_id" => profile.id}
+    case ProfileToken.generate_signed_token(claim, "profile") do
       {token, _otp} -> token
       :error -> :error
     end
   end
 
-  def verify_user_token(token) do
-     UserToken.verify_signed_token(token, "user")
+  def verify_profile_token(token) do
+     ProfileToken.verify_signed_token(token, "profile")
   end
 
   def create_registration_token(email) do
     claim = %{"email" => email}
-    case UserToken.generate_signed_token(claim, "registration") do
+    case ProfileToken.generate_signed_token(claim, "registration") do
       {token, _otp} -> token
       :error -> :error
     end
   end
 
   def verify_registration_token(token) do
-    case UserToken.verify_signed_token(token, "registration") do
+    case ProfileToken.verify_signed_token(token, "registration") do
       {:ok, %{"email" => email}} -> email
       {:error, _} -> :error
     end
   end
+
+
   # @doc """
-  # Updates the user email using the given token.
+  # Updates the profile email using the given token.
 
   # If the token matches, the user email is updated and the token is deleted.
   # The confirmed_at date is also updated to the current time.
@@ -173,7 +188,7 @@ defmodule Anydrop.Accounts do
   # def update_user_email(user, token) do
   #   context = "change:#{user.email}"
 
-  #   with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
+  #   with {:ok, query} <- ProfileToken.verify_change_email_token_query(token, context),
   #        %UserToken{sent_to: email} <- Repo.one(query),
   #        {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
   #     :ok
@@ -207,7 +222,7 @@ defmodule Anydrop.Accounts do
   #   {encoded_token, user_token} = UserToken.build_email_token(user, "change:#{current_email}")
 
   #   Repo.insert!(user_token)
-  #   UserNotifier.deliver_update_email_instructions(user, update_email_url_fun.(encoded_token))
+  #   ProfileNotifier.deliver_update_email_instructions(user, update_email_url_fun.(encoded_token))
   # end
 
   # @doc """

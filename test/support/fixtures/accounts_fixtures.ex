@@ -4,26 +4,26 @@ defmodule Anydrop.AccountsFixtures do
   entities via the `Anydrop.Accounts` context.
   """
 
-  def unique_user_email, do: "user#{System.unique_integer()}@example.com"
-  def valid_user_password, do: "hello world!"
+  def unique_profile_email, do: "profile#{System.unique_integer()}@example.com"
+  def valid_profile_password, do: "hello world!"
 
-  def valid_user_attributes(attrs \\ %{}) do
+  def valid_profile_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
-      email: unique_user_email(),
-      password: valid_user_password()
+      email: unique_profile_email(),
+      password: valid_profile_password()
     })
   end
 
-  def user_fixture(attrs \\ %{}) do
-    {:ok, user} =
+  def profile_fixture(attrs \\ %{}) do
+    {:ok, profile} =
       attrs
-      |> valid_user_attributes()
-      |> Anydrop.Accounts.register_user()
+      |> valid_profile_attributes()
+      |> Anydrop.Accounts.register_profile()
 
-    user
+    profile
   end
 
-  def extract_user_token(fun) do
+  def extract_profile_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
     [_, token | _] = String.split(captured_email.text_body, "[TOKEN]")
     token

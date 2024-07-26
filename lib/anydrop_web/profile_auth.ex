@@ -1,4 +1,4 @@
-defmodule AnydropWeb.UserAuth do
+defmodule AnydropWeb.ProfileAuth do
   use AnydropWeb, :verified_routes
 
   import Plug.Conn
@@ -13,7 +13,7 @@ defmodule AnydropWeb.UserAuth do
   @remember_me_options [sign: true, http_only: true, secure: true, max_age: @max_age, same_site: "Lax"]
 
   @doc """
-  Logs the user in.
+  Logs the profile in.
 
   It renews the session ID and clears the whole session
   to avoid fixation attacks. See the renew_session
@@ -24,15 +24,15 @@ defmodule AnydropWeb.UserAuth do
   disconnected on log out. The line can be safely removed
   if you are not using LiveView.
   """
-  def log_in_user(conn, user) do
-    token = Accounts.create_user_token(user)
-    user_return_to = get_session(conn, :user_return_to)
+  def log_in_profile(conn, profile) do
+    token = Accounts.create_profile_token(profile)
+    profile_return_to = get_session(conn, :profile_return_to)
 
     conn
     |> put_token_in_cookie(token)
-    |> put_session(:user_token, token)
-    |> put_session(:live_socket_id, "users_sessions:#{Base.url_encode64(token)}")
-    |> redirect(to: user_return_to || signed_in_path(conn))
+    |> put_session(:profile_token, token)
+    |> put_session(:live_socket_id, "profiles_sessions:#{Base.url_encode64(token)}")
+    |> redirect(to: profile_return_to || signed_in_path(conn))
   end
 
   defp put_token_in_cookie(conn, token) do
@@ -72,14 +72,14 @@ defmodule AnydropWeb.UserAuth do
   end
 
   @doc """
-  Logs the user out.
+  Logs the profile out.
 
   It clears all session data for safety. See renew_session.
   """
-  def log_out_user(conn) do
+  def log_out_profile(conn) do
     conn = fetch_cookies(conn, signed: @remember_me_cookie)
-    # user_token = get_session(conn, :user_token)
-    # user_token && Accounts.delete_user_session_token(user_token)
+    # profile_token = get_session(conn, :profile_token)
+    # profile_token && Accounts.delete_profile_session_token(profile_token)
 
     if live_socket_id = get_session(conn, :live_socket_id) do
       AnydropWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
@@ -92,23 +92,23 @@ defmodule AnydropWeb.UserAuth do
   end
 
   @doc """
-  Authenticates the user by looking into the session
+  Authenticates the profile by looking into the session
   and remember me token.
   """
-  def fetch_current_user(conn, _opts) do
-    {user_token, conn} = ensure_user_token(conn)
-    user = user_token && Accounts.get_user_by_user_token(user_token)
-    assign(conn, :current_user, user)
+  def fetch_current_profile(conn, _opts) do
+    {profile_token, conn} = ensure_profile_token(conn)
+    profile = profile_token && Accounts.get_profile_by_profile_token(profile_token)
+    assign(conn, :current_profile, profile)
   end
 
-  defp ensure_user_token(conn) do
-    if token = get_session(conn, :user_token) do
+  defp ensure_profile_token(conn) do
+    if token = get_session(conn, :profile_token) do
       {token, conn}
     else
       conn = fetch_cookies(conn, signed: [@remember_me_cookie])
 
       if token = conn.cookies[@remember_me_cookie] do
-        {token, put_session(conn, :user_token, token)}
+        {token, put_session(conn, :profile_token, token)}
       else
         {nil, conn}
       end
@@ -116,7 +116,7 @@ defmodule AnydropWeb.UserAuth do
   end
 
   @doc """
-  Handles mounting and authenticating the current_user in LiveViews.
+  Handles mounting and authenticating the current_profile in LiveViews.
 
   ## `on_mount` arguments
 
@@ -150,14 +150,14 @@ defmodule AnydropWeb.UserAuth do
         live "/profile", ProfileLive, :index
       end
   """
-  def on_mount(:mount_current_user, _params, session, socket) do
-    {:cont, mount_current_user(socket, session)}
+  def on_mount(:mount_current_profile, _params, session, socket) do
+    {:cont, mount_current_profile(socket, session)}
   end
 
   def on_mount(:ensure_authenticated, _params, session, socket) do
-    socket = mount_current_user(socket, session)
+    socket = mount_current_profile(socket, session)
 
-    if socket.assigns.current_user do
+    if socket.assigns.current_profile do
       {:cont, socket}
     else
       socket =
@@ -169,29 +169,29 @@ defmodule AnydropWeb.UserAuth do
     end
   end
 
-  def on_mount(:redirect_if_user_is_authenticated, _params, session, socket) do
-    socket = mount_current_user(socket, session)
+  def on_mount(:redirect_if_profile_is_authenticated, _params, session, socket) do
+    socket = mount_current_profile(socket, session)
 
-    if socket.assigns.current_user do
+    if socket.assigns.current_profile do
       {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
     else
       {:cont, socket}
     end
   end
 
-  defp mount_current_user(socket, session) do
-    Phoenix.Component.assign_new(socket, :current_user, fn ->
-      if user_token = session["user_token"] do
-        Accounts.get_user_by_user_token(user_token)
+  defp mount_current_profile(socket, session) do
+    Phoenix.Component.assign_new(socket, :current_profile, fn ->
+      if profile_token = session["profile_token"] do
+        Accounts.get_profile_by_profile_token(profile_token)
       end
     end)
   end
 
   @doc """
-  Used for routes that require the user to not be authenticated.
+  Used for routes that require the profile to not be authenticated.
   """
-  def redirect_if_user_is_authenticated(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def redirect_if_profile_is_authenticated(conn, _opts) do
+    if conn.assigns[:current_profile] do
       conn
       |> redirect(to: signed_in_path(conn))
       |> halt()
@@ -201,13 +201,13 @@ defmodule AnydropWeb.UserAuth do
   end
 
   @doc """
-  Used for routes that require the user to be authenticated.
+  Used for routes that require the profile to be authenticated.
 
-  If you want to enforce the user email is confirmed before
+  If you want to enforce the profile email is confirmed before
   they use the application at all, here would be a good place.
   """
-  def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
+  def require_authenticated_profile(conn, _opts) do
+    if conn.assigns[:current_profile] do
       conn
     else
       conn
@@ -225,7 +225,7 @@ defmodule AnydropWeb.UserAuth do
   # end
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do
-    put_session(conn, :user_return_to, current_path(conn))
+    put_session(conn, :profile_return_to, current_path(conn))
   end
 
   defp maybe_store_return_to(conn), do: conn
