@@ -1,4 +1,4 @@
-defmodule Anydrop.Accounts.UserNotifier do
+defmodule Anydrop.Accounts.ProfileNotifier do
   import Swoosh.Email
 
   alias Anydrop.Mailer

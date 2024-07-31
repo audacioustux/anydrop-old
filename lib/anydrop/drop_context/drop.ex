@@ -1,11 +1,12 @@
 defmodule Anydrop.DropContext.Drop do
-  use Ecto.Schema
+  use Anydrop.Schema
   import Ecto.Changeset
 
   schema "drops" do
     field :body, :string
     field :is_deleted, :boolean, default: false
 
+    belongs_to :profile, Anydrop.Accounts.Profile
     timestamps(type: :utc_datetime)
   end
 

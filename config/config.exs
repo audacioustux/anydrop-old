@@ -14,7 +14,7 @@ config :anydrop,
 # Configures the endpoint
 config :anydrop, AnydropWeb.Endpoint,
   url: [host: "localhost"],
-  # check_origin: ["https://anydrop.audacioustux.com/", "//anydrop.fly.dev/", "//anydrop-staging.fly.dev/"],
+  check_origin: ["https://anydrop.audacioustux.com/", "//anydrop.me", "//anydrop.fly.dev/", "//anydrop-staging.fly.dev/", "//stage.anydrop.me"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: AnydropWeb.ErrorHTML, json: AnydropWeb.ErrorJSON],
@@ -60,6 +60,9 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# Instruct Ecto to use UUIDs in migration
+config :anydrop, Anydrop.Repo, migration_primary_key: [name: :id, type: :binary_id]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

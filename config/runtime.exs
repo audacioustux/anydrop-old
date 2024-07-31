@@ -23,7 +23,8 @@ end
 
 # configuring the mailer
 smtp_relay = System.get_env("SMTP_ENDPOINT") |> to_charlist()
-tls_options = [versions: [:"tlsv1.2"],
+tls_options = [versions: [:"tlsv1.3"],
+              middlebox_comp_mode: false,
               server_name_indication: smtp_relay,
               depth: 99,
               cacerts: :public_key.cacerts_get()
@@ -70,7 +71,7 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("PHX_HOST") || "anydrop.com"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :anydrop, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")

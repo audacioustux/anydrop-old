@@ -1,13 +1,10 @@
-defmodule Anydrop.Accounts.UserToken do
-  use Ecto.Schema
-  # import Ecto.Query
-
+defmodule Anydrop.Accounts.ProfileToken do
 
   @salt_for_login "qAAJSbHk"
-  @salt_for_user "FbgggmBP"
+  @salt_for_profile "FbgggmBP"
   @salt_for_registration "mQJBViou"
   @max_age_for_login_token 60 * 5
-  @max_age_for_user_token 60 * 10
+  @max_age_for_profile_token 60 * 60
   @max_age_for_registration_token 60 * 2
 
   def generate_signed_token(data, context) do
@@ -72,15 +69,15 @@ defmodule Anydrop.Accounts.UserToken do
   defp create_otp("login") do
     Enum.random(1_00_000..9_99_999) |> Integer.to_string()
   end
+
   defp create_otp(_), do: ""
 
-
   defp salt_for("login"), do: @salt_for_login
-  defp salt_for("user"), do: @salt_for_user
+  defp salt_for("profile"), do: @salt_for_profile
   defp salt_for("registration"), do: @salt_for_registration
 
   defp max_age_for("login"), do: @max_age_for_login_token
-  defp max_age_for("user"), do: @max_age_for_user_token
+  defp max_age_for("profile"), do: @max_age_for_profile_token
   defp max_age_for("registration"), do: @max_age_for_registration_token
 
 

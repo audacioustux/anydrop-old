@@ -1,8 +1,8 @@
-defmodule AnydropWeb.UserSessionController do
+defmodule AnydropWeb.ProfileSessionController do
   use AnydropWeb, :controller
 
   alias Anydrop.Accounts
-  alias AnydropWeb.UserAuth
+  alias AnydropWeb.ProfileAuth
 
   def create(conn, %{"_action" => "registered"} = params) do
     create(conn, params, "Account created successfully!")
@@ -11,10 +11,10 @@ defmodule AnydropWeb.UserSessionController do
   def create(conn, %{"token" => token, "otp" => otp}) do
     case Accounts.verify_login_token(token, otp) do
       {:ok, %{"email" => email}} ->
-        if user = Accounts.get_user_by_email(email) do
+        if profile = Accounts.get_profile_by_email(email) do
           conn
           |> put_flash(:info, "Welcome back!")
-          |> UserAuth.log_in_user(user)
+          |> ProfileAuth.log_in_profile(profile)
         else
           reg_token = Accounts.create_registration_token(email)
           conn
@@ -28,19 +28,19 @@ defmodule AnydropWeb.UserSessionController do
     end
   end
 
-  defp create(conn, %{"user" => user_params}, info) do
-    %{"email" => email} = user_params
+  defp create(conn, %{"profile" => profile_params}, info) do
+    %{"email" => email} = profile_params
 
-    user = Accounts.get_user_by_email(email)
+    profile = Accounts.get_profile_by_email(email)
 
     conn
     |> put_flash(:info, info)
-    |> UserAuth.log_in_user(user)
+    |> ProfileAuth.log_in_profile(profile)
   end
 
   def delete(conn, _params) do
     conn
     |> put_flash(:info, "Logged out successfully.")
-    |> UserAuth.log_out_user()
+    |> ProfileAuth.log_out_profile()
   end
 end

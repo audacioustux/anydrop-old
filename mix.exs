@@ -59,7 +59,8 @@ defmodule Anydrop.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
-      {:gen_smtp, "~> 1.1"}
+      {:gen_smtp, "~> 1.1"},
+      {:uniq, "~> 0.1"}
     ]
   end
 

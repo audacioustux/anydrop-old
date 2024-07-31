@@ -7,6 +7,12 @@ defmodule AnydropWeb.AdminLive do
   def render(assigns) do
     ~H"""
       <div id="scroll-wrapper-id" phx-hook="ScrollToBottom">
+          <.link navigate={~p"/"}
+            class="py-2 lg:mx-auto lg:max-w-lg text-center block"
+          >
+            Home
+          </.link>
+
         <main id="drops-container"
           phx-update="stream"
           phx-viewport-top={!@end_of_stream? && "prev-page"}
@@ -17,11 +23,17 @@ defmodule AnydropWeb.AdminLive do
                   if(@page == 1, do: "", else: "pb-[calc(200vh)]")
           ]}
         >
-          <%= for {id, drop} <- @streams.drops do%>
-            <.drop_card
-              drop={drop}
-              dom_id={id}
-            />
+          <%= if Map.has_key?(assigns, :streams)  do %>
+            <%= for {id, drop} <- @streams.drops do %>
+              <.drop_card
+                drop={drop}
+                dom_id={id}
+              />
+            <% end %>
+          <% else %>
+            <div class="text-center text-gray-500">
+              No drops yet
+            </div>
           <% end %>
         </main>
       </div>
@@ -39,7 +51,6 @@ defmodule AnydropWeb.AdminLive do
 
     socket =
       socket
-      |> assign(:page_title, "AnyDrop - Drop / Send anything anonymously")
       |> assign(page: 1, per_page: 10)
       |> assign(:new_drop?, false)
       |> paginate_drops(1)
@@ -50,7 +61,8 @@ defmodule AnydropWeb.AdminLive do
 
   defp paginate_drops(socket, new_page) when new_page >= 1 do
     %{per_page: per_page, page: cur_page} = socket.assigns
-    drops = DropContext.list_drops(offset: (new_page - 1) * per_page, limit: per_page)
+    handle = socket.assigns.current_profile.handle
+    drops = DropContext.list_drops(offset: (new_page - 1) * per_page, limit: per_page, handle: handle)
 
     {drops, at, limit} =
       if new_page <= cur_page do

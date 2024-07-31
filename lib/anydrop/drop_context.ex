@@ -21,9 +21,11 @@ defmodule Anydrop.DropContext do
     Repo.all(Drop)
   end
 
-  def list_drops([offset: offset, limit: limit]) do
+  def list_drops([offset: offset, limit: limit, handle: handle]) do
+    profile = Anydrop.Accounts.get_profile_by_handle!(handle)
+
     Drop
-    |> where([d], d.is_deleted == false)
+    |> where([d], d.is_deleted == false and d.profile_id == ^profile.id)
     |> order_by(desc: :inserted_at)
     |> limit(^limit)
     |> offset(^offset)
@@ -58,8 +60,11 @@ defmodule Anydrop.DropContext do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_drop(attrs \\ %{}) do
-    %Drop{}
+  def create_drop(handle, attrs \\ %{}) do
+    profile = Anydrop.Accounts.get_profile_by_handle!(handle)
+
+    profile
+    |> Ecto.build_assoc(:drops)
     |> Drop.changeset(attrs)
     |> Repo.insert()
     |> broadcast()
