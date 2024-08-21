@@ -4,7 +4,7 @@ defmodule Anydrop.Accounts.ProfileToken do
   @salt_for_profile "FbgggmBP"
   @salt_for_registration "mQJBViou"
   @max_age_for_login_token 60 * 5
-  @max_age_for_profile_token 60 * 60
+  @max_age_for_profile_token 60 * 60 * 24 * 365
   @max_age_for_registration_token 60 * 2
 
   def generate_signed_token(data, context) do
