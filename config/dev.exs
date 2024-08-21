@@ -5,7 +5,7 @@ config :anydrop, Anydrop.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "anydrop_dev",
+  database: "anydrop_play_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
